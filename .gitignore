@@ -7,6 +7,14 @@
 **/Content/StarterContent
 **/Content/StarterContent
 
+# Windows
+# VS Generated Files
+.vs/
+*.VC.db
+*.suo
+*.VC.opendb
+*.sln
+
 # macOS
 **/._*
 **/.DS_Store
