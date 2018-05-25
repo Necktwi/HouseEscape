@@ -18,15 +18,16 @@ UOpenDoor::UOpenDoor () {
 // Called when the game starts
 void UOpenDoor::BeginPlay () {
 	Super::BeginPlay();
-   ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 void UOpenDoor::open_door () {
-   GetOwner()->SetActorRotation(FRotator(0.f, OpenAngle, 0.f));
+   //GetOwner()->SetActorRotation(FRotator(0.f, OpenAngle, 0.f));
+   OnOpen.Broadcast();
 }
 
 void UOpenDoor::close_door() {
-   GetOwner()->SetActorRotation(FRotator(0.f, 0.f, 0.f));
+   //GetOwner()->SetActorRotation(FRotator(0.f, 0.f, 0.f));
+   OnClose.Broadcast();
 }
 
 // Called every frame
@@ -35,15 +36,34 @@ void UOpenDoor::TickComponent (
    FActorComponentTickFunction* ThisTickFunction
 ) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-   if (DoorOpenFlag && 
+   if (DoorOpenFlag && get_total_mass_of_actors_on_plate() < PPTriggerMass &&
       GetWorld()->GetTimeSeconds() - LastDoorOpenTime > DoorCloseDelay
    ) {
       close_door();
       DoorOpenFlag = false;
    }
-   if (PressurePlate->IsOverlappingActor(ActorThatOpens)) {
+   if (get_total_mass_of_actors_on_plate() >= PPTriggerMass) {
       open_door();
       DoorOpenFlag = true;
       LastDoorOpenTime = GetWorld()->GetTimeSeconds();
    }
+}
+
+float UOpenDoor::get_total_mass_of_actors_on_plate() {
+   float TotalMass = 0.f;
+   TArray<AActor*> OverlappingActors;
+   if (PressurePlate == nullptr) {
+      UE_LOG(LogTemp, Error, TEXT("Missing PressurePlate."));
+      return 0.0f;
+   }
+   PressurePlate->GetOverlappingActors(OverlappingActors);
+   UE_LOG(LogTemp, Warning, TEXT("OverlappingActors count is %d"),
+      OverlappingActors.Num()
+   );
+   for (auto& Actor : OverlappingActors) {
+      TotalMass += 
+      Actor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+   }
+   UE_LOG(LogTemp, Warning, TEXT("Total mass is %f"), TotalMass);
+   return TotalMass;
 }
