@@ -6,7 +6,8 @@
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// Set this component to be initialized when the game starts, and to be 
+   // ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -15,8 +16,7 @@ UGrabber::UGrabber()
 
 
 // Called when the game starts
-void UGrabber::BeginPlay()
-{
+void UGrabber::BeginPlay() {
 	Super::BeginPlay();
    find_physics_handle_component();
    setup_input_component();
@@ -38,8 +38,7 @@ void UGrabber::setup_input_component() {
       InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::release);
    } else {
       UE_LOG(LogTemp, Error, TEXT("%s missing Input component"), 
-         *GetOwner()->GetName()
-      )
+         *GetOwner()->GetName())
    }
 }
 
